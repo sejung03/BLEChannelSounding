@@ -9,9 +9,20 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,13 +36,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private var permissionsGranted by mutableStateOf(false)
+    private var running by mutableStateOf(false)
 
     private val permissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { result ->
             Log.i(TAG, "Permission result: $result")
-            permissionsGranted = result.values.all { it }
+            permissionsGranted = hasAllPermissions()
             Log.i(TAG, "permissionsGranted = $permissionsGranted")
         }
 
@@ -40,48 +52,62 @@ class MainActivity : ComponentActivity() {
 
         permissionsGranted = hasAllPermissions()
 
-        requestBlePermissions()
+        if (!permissionsGranted) {
+            requestBlePermissions()
+        }
 
         setContent {
             BleCsReflectorTheme {
                 ReflectorScreen(
                     hasPermissions = permissionsGranted,
+                    running = running,
                     onRequestPermissions = {
                         requestBlePermissions()
                     },
                     onStart = {
-                        Log.i(TAG, "Start button clicked")
-
-                        if (!hasAllPermissions()) {
-                            Log.e(TAG, "Missing permissions")
-                            requestBlePermissions()
-                            return@ReflectorScreen
-                        }
-
-                        val intent = Intent(
-                            this,
-                            ReflectorService::class.java
-                        ).apply {
-                            action = ReflectorService.ACTION_START
-                        }
-
-                        startForegroundService(intent)
+                        startReflectorService()
                     },
                     onStop = {
-                        Log.i(TAG, "Stop button clicked")
-
-                        val intent = Intent(
-                            this,
-                            ReflectorService::class.java
-                        ).apply {
-                            action = ReflectorService.ACTION_STOP
-                        }
-
-                        startService(intent)
+                        stopReflectorService()
                     }
                 )
             }
         }
+    }
+
+    private fun startReflectorService() {
+        Log.i(TAG, "Start Reflector requested")
+
+        permissionsGranted = hasAllPermissions()
+
+        if (!permissionsGranted) {
+            Log.e(TAG, "Missing permissions")
+            requestBlePermissions()
+            return
+        }
+
+        val intent = Intent(this, ReflectorService::class.java).apply {
+            action = ReflectorService.ACTION_START
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+
+        running = true
+    }
+
+    private fun stopReflectorService() {
+        Log.i(TAG, "Stop Reflector requested")
+
+        val intent = Intent(this, ReflectorService::class.java).apply {
+            action = ReflectorService.ACTION_STOP
+        }
+
+        startService(intent)
+        running = false
     }
 
     private fun requestBlePermissions() {
@@ -115,12 +141,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ReflectorScreen(
     hasPermissions: Boolean,
+    running: Boolean,
     onRequestPermissions: () -> Unit,
     onStart: () -> Unit,
     onStop: () -> Unit
 ) {
-    var running by remember { mutableStateOf(false) }
-
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -146,14 +171,13 @@ fun ReflectorScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
+                enabled = !running,
                 onClick = {
                     if (!hasPermissions) {
                         onRequestPermissions()
-                        return@Button
+                    } else {
+                        onStart()
                     }
-
-                    running = true
-                    onStart()
                 }
             ) {
                 Text("Start Reflector")
@@ -162,8 +186,8 @@ fun ReflectorScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
+                enabled = running,
                 onClick = {
-                    running = false
                     onStop()
                 }
             ) {

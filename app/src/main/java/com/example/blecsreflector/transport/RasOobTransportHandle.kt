@@ -1,96 +1,75 @@
 package com.example.blecsreflector.transport
 
-import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattServer
-import android.bluetooth.BluetoothStatusCodes
 import android.ranging.oob.TransportHandle
 import android.util.Log
+import com.example.blecsreflector.ble.OobGattServerManager
 import java.util.concurrent.Executor
 
 class RasOobTransportHandle(
-    private val gattServer: BluetoothGattServer,
-    private val peerProvider: () -> BluetoothDevice?,
-    private val txCharacteristicProvider: () -> BluetoothGattCharacteristic?
+    private val gattServerManager: OobGattServerManager
 ) : TransportHandle {
 
     companion object {
         private const val TAG = "RasOobTransport"
     }
 
-    private var executor: Executor? = null
-    private var callback: TransportHandle.ReceiveCallback? = null
+    private var receiveCallback: TransportHandle.ReceiveCallback? = null
+    private var callbackExecutor: Executor? = null
 
     override fun registerReceiveCallback(
         executor: Executor,
         callback: TransportHandle.ReceiveCallback
     ) {
-        this.executor = executor
-        this.callback = callback
-        Log.i(TAG, "ReceiveCallback registered")
+        Log.d(TAG, "ReceiveCallback registered")
+        callbackExecutor = executor
+        receiveCallback = callback
     }
 
-    @SuppressLint("MissingPermission")
     override fun sendData(data: ByteArray) {
-        Log.i(
-            TAG,
-            "sendData called: size=${data.size}, data=${data.joinToString(" ") { "%02X".format(it) }}"
-        )
-        val peer = peerProvider()
-        val txChar = txCharacteristicProvider()
+        Log.d(TAG, "sendData to Nordic board: ${data.size} bytes")
+        gattServerManager.sendOobDataToBoard(data)
+    }
 
-        if (peer == null || txChar == null) {
-            Log.e(TAG, "Cannot send OOB data. peer=$peer char=$txChar")
-            notifySendFailed()
+    fun onReceiveFromBoard(data: ByteArray) {
+        val executor = callbackExecutor
+        val callback = receiveCallback
+
+        if (executor == null || callback == null) {
+            Log.w(TAG, "ReceiveCallback is not registered yet")
             return
         }
 
-        val result = gattServer.notifyCharacteristicChanged(
-            peer,
-            txChar,
-            true,
-            data
-        )
-
-        if (result != BluetoothStatusCodes.SUCCESS) {
-            Log.e(TAG, "notifyCharacteristicChanged failed: $result")
-            notifySendFailed()
-        } else {
-            Log.d(TAG, "OOB sendData: ${data.size} bytes")
-        }
-    }
-
-    fun onDataReceivedFromPeer(data: ByteArray) {
-        Log.d(TAG, "OOB received: ${data.size} bytes")
-        executor?.execute {
-            callback?.onReceiveData(data)
+        executor.execute {
+            callback.onReceiveData(data)
         }
     }
 
     fun notifyDisconnected() {
-        executor?.execute {
-            callback?.onDisconnect()
+        callbackExecutor?.execute {
+            receiveCallback?.onDisconnect()
         }
     }
 
     fun notifyReconnected() {
-        executor?.execute {
-            callback?.onReconnect()
+        callbackExecutor?.execute {
+            receiveCallback?.onReconnect()
         }
     }
 
-    private fun notifySendFailed() {
-        executor?.execute {
-            callback?.onSendFailed()
+    fun notifySendFailed() {
+        callbackExecutor?.execute {
+            receiveCallback?.onSendFailed()
         }
     }
 
     override fun close() {
-        executor?.execute {
-            callback?.onClose()
+        Log.d(TAG, "TransportHandle closed")
+
+        callbackExecutor?.execute {
+            receiveCallback?.onClose()
         }
-        callback = null
-        executor = null
+
+        receiveCallback = null
+        callbackExecutor = null
     }
 }

@@ -1,9 +1,9 @@
 package com.example.blecsreflector.ranging
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.content.Context
-import android.os.CancellationSignal
-import android.ranging.RangingCapabilities
+import android.content.pm.PackageManager
+import android.os.Build
 import android.ranging.RangingData
 import android.ranging.RangingDevice
 import android.ranging.RangingManager
@@ -13,78 +13,42 @@ import android.ranging.oob.DeviceHandle
 import android.ranging.oob.OobResponderRangingConfig
 import android.ranging.oob.TransportHandle
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import java.util.UUID
-import java.util.concurrent.Executors
 
+@RequiresApi(Build.VERSION_CODES.BAKLAVA)
 class RangingController(
     private val context: Context,
     private val transportHandle: TransportHandle
 ) {
-
     companion object {
         private const val TAG = "RangingController"
-
-        private val PEER_UUID: UUID =
-            UUID.fromString("12345678-1234-5678-1234-567812345678")
     }
 
-    private val executor = Executors.newSingleThreadExecutor()
-
-    private val rangingManager: RangingManager =
+    private val rangingManager: RangingManager? =
         context.getSystemService(RangingManager::class.java)
 
-    private var rangingSession: RangingSession? = null
-    private var cancellationSignal: CancellationSignal? = null
+    private var session: RangingSession? = null
 
-    private val capabilitiesCallback =
-        RangingManager.RangingCapabilitiesCallback { capabilities ->
-            logCapabilities(capabilities)
-        }
-
-    fun registerCapabilityLogger() {
-        Log.i(TAG, "Registering RangingCapabilitiesCallback")
-
-        rangingManager.registerCapabilitiesCallback(
-            executor,
-            capabilitiesCallback
-        )
-    }
-
-    fun unregisterCapabilityLogger() {
-        try {
-            rangingManager.unregisterCapabilitiesCallback(
-                capabilitiesCallback
-            )
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to unregister capabilities callback", e)
-        }
-    }
-
-    private fun logCapabilities(capabilities: RangingCapabilities) {
-        Log.i(TAG, "RangingCapabilities = $capabilities")
-        Log.i(TAG, "Check whether BLE_CS appears in capabilities above.")
-    }
-
-    @SuppressLint("MissingPermission")
-    fun startResponder() {
-        registerCapabilityLogger()
-
-        Log.i(TAG, "Creating RangingSession")
-
-        val session = rangingManager.createRangingSession(
-            executor,
-            sessionCallback
-        )
-
-        if (session == null) {
-            Log.e(TAG, "Failed to create RangingSession")
+    fun startReflector() {
+        if (rangingManager == null) {
+            Log.e(TAG, "RangingManager is not available")
             return
         }
 
-        rangingSession = session
+        if (!hasRangingPermission()) {
+            Log.e(TAG, "Missing RANGING permission")
+            return
+        }
+
+        if (session != null) {
+            Log.w(TAG, "Reflector session already exists")
+            return
+        }
 
         val rangingDevice = RangingDevice.Builder()
-            .setUuid(PEER_UUID)
+            .setUuid(UUID.randomUUID())
             .build()
 
         val deviceHandle = DeviceHandle.Builder(
@@ -92,55 +56,62 @@ class RangingController(
             transportHandle
         ).build()
 
-        val config = OobResponderRangingConfig.Builder(deviceHandle)
+        val responderConfig = OobResponderRangingConfig.Builder(deviceHandle)
             .build()
 
-        val preference = RangingPreference.Builder(
+        val rangingPreference = RangingPreference.Builder(
             RangingPreference.DEVICE_ROLE_RESPONDER,
-            config
+            responderConfig
         ).build()
 
-        Log.i(TAG, "Starting OOB responder ranging session")
-        cancellationSignal = session.start(preference)
+        session = rangingManager.createRangingSession(
+            context.mainExecutor,
+            object : RangingSession.Callback {
+                override fun onOpened() {
+                    Log.d(TAG, "Reflector ranging session opened")
+                    session?.start(rangingPreference)
+                }
+
+                override fun onOpenFailed(reason: Int) {
+                    Log.e(TAG, "Ranging session open failed: $reason")
+                    session = null
+                }
+
+                override fun onStarted(peer: RangingDevice, technology: Int) {
+                    Log.d(TAG, "CS procedure started by Nordic initiator")
+                }
+
+                override fun onResults(peer: RangingDevice, data: RangingData) {
+                    Log.d(TAG, "Ranging result: $data")
+                }
+
+                override fun onStopped(peer: RangingDevice, technology: Int) {
+                    Log.d(TAG, "CS procedure stopped")
+                }
+
+                override fun onClosed(reason: Int) {
+                    Log.d(TAG, "Ranging session closed: $reason")
+                    session = null
+                }
+            }
+        )
     }
 
-    @SuppressLint("MissingPermission")
-    fun stopResponder() {
-        Log.i(TAG, "Stopping responder")
-
-        cancellationSignal?.cancel()
-        cancellationSignal = null
-
-        rangingSession?.close()
-        rangingSession = null
-
-        unregisterCapabilityLogger()
+    fun stopReflector() {
+        try {
+            session?.stop()
+            session?.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to stop reflector session", e)
+        } finally {
+            session = null
+        }
     }
 
-    private val sessionCallback = object : RangingSession.Callback {
-
-        override fun onOpened() {
-            Log.i(TAG, "Ranging session opened")
-        }
-
-        override fun onOpenFailed(reason: Int) {
-            Log.e(TAG, "Ranging session open failed: $reason")
-        }
-
-        override fun onStarted(peer: RangingDevice, technology: Int) {
-            Log.i(TAG, "Ranging started: peer=${peer.uuid}, tech=$technology")
-        }
-
-        override fun onResults(peer: RangingDevice, data: RangingData) {
-            Log.i(TAG, "Ranging result: peer=${peer.uuid}, data=$data")
-        }
-
-        override fun onStopped(peer: RangingDevice, technology: Int) {
-            Log.i(TAG, "Ranging stopped: peer=${peer.uuid}, tech=$technology")
-        }
-
-        override fun onClosed(reason: Int) {
-            Log.i(TAG, "Ranging session closed: $reason")
-        }
+    private fun hasRangingPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.RANGING
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }
