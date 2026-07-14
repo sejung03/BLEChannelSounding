@@ -1,4 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.BleCsReflector" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.BleCsReflector" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/reflector_primary</item>
+        <item name="colorPrimaryContainer">@color/reflector_surface_alt</item>
+        <item name="colorSecondary">@color/reflector_secondary</item>
+        <item name="colorSurface">@color/reflector_surface</item>
+        <item name="android:colorBackground">@color/reflector_background</item>
+        <item name="android:navigationBarColor">@color/reflector_background</item>
+        <item name="android:statusBarColor">@color/reflector_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.BleCsReflector.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.BleCsReflector.Medium</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="ShapeAppearance.BleCsReflector.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">4dp</item>
+    </style>
+
+    <style name="ShapeAppearance.BleCsReflector.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="TextAppearance.BleCsReflector.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/reflector_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="TextAppearance.BleCsReflector.Label" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/reflector_text_muted</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="TextAppearance.BleCsReflector.Value" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/reflector_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 </resources>

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/reflector_surface"
+        android:elevation="1dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:logo="@drawable/ic_reflector"
+        app:logoDescription="@string/app_name"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/reflector_text" />
+
+    <ScrollView
+        android:id="@+id/contentScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="32dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/reflector_surface"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/reflector_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:id="@+id/statusIndicator"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_status_dot" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/statusTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/status_stopped"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                                android:textColor="@color/reflector_text"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/statusSubtitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/status_stopped_detail"
+                                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                android:textColor="@color/reflector_text_muted" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/toggleServiceButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/start_reflector"
+                        app:cornerRadius="6dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/enableBluetoothButton"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/enable_bluetooth"
+                        android:visibility="gone"
+                        app:cornerRadius="6dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/section_system"
+                android:textAppearance="@style/TextAppearance.BleCsReflector.Section" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/reflector_surface"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_android"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+
+                    <TextView
+                        android:id="@+id/androidValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/value_unknown"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_bluetooth"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+
+                    <TextView
+                        android:id="@+id/bluetoothValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/value_unknown"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_ble_cs"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+
+                    <TextView
+                        android:id="@+id/csValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/value_unknown"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_security"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+
+                    <TextView
+                        android:id="@+id/securityValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="180dp"
+                        android:text="@string/value_unknown"
+                        android:textAlignment="viewEnd"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/section_link"
+                android:textAppearance="@style/TextAppearance.BleCsReflector.Section" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/reflector_surface"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_device"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+
+                    <TextView
+                        android:id="@+id/deviceValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="220dp"
+                        android:text="@string/value_not_connected"
+                        android:textAlignment="viewEnd"
+                        android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_bond" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                    <TextView android:id="@+id/bondValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/value_unknown" android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_subscription" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                    <TextView android:id="@+id/subscriptionValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/value_no" android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_session" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                    <TextView android:id="@+id/sessionValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="200dp" android:text="@string/status_stopped" android:textAlignment="viewEnd" android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/reflector_divider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_mtu" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                    <TextView android:id="@+id/mtuValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/value_default_mtu" android:textAppearance="@style/TextAppearance.BleCsReflector.Value" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/section_gatt"
+                android:textAppearance="@style/TextAppearance.BleCsReflector.Section" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/reflector_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_service_uuid" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                <TextView android:id="@+id/serviceUuidValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:fontFamily="monospace" android:textColor="@color/reflector_text" android:textIsSelectable="true" android:textSize="12sp" />
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="@string/label_rx_uuid" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                <TextView android:id="@+id/rxUuidValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:fontFamily="monospace" android:textColor="@color/reflector_text" android:textIsSelectable="true" android:textSize="12sp" />
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="@string/label_tx_uuid" android:textAppearance="@style/TextAppearance.BleCsReflector.Label" />
+                <TextView android:id="@+id/txUuidValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:fontFamily="monospace" android:textColor="@color/reflector_text" android:textIsSelectable="true" android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/section_events"
+                    android:textAppearance="@style/TextAppearance.BleCsReflector.Section" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clearLogButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:minWidth="64dp"
+                    android:text="@string/clear" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/reflector_text"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/logValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="180dp"
+                    android:fontFamily="monospace"
+                    android:gravity="top|start"
+                    android:padding="14dp"
+                    android:textColor="#EAF0F1"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
