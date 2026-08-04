@@ -1,0 +1,23 @@
+R_DEF: Internal format may change without notice
+local
+id advertiseButton
+id applyRoleButton
+id capabilityText
+id deviceList
+id distanceText
+id initiatorPanel
+id initiatorRadio
+id pairButton
+id rawDistanceText
+id reflectorPanel
+id reflectorPeerText
+id reflectorRadio
+id roleGroup
+id scanButton
+id selectedDeviceText
+id startCsButton
+id statusText
+id stopButton
+layout activity_main
+string app_name
+style Theme.PhoneCS
