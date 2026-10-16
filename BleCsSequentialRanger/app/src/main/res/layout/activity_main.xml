@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="30dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title"
+            android:textColor="@color/text_primary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/subtitle"
+            android:textColor="@color/primary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/supportStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rounded_surface"
+            android:padding="12dp"
+            android:text="@string/device_support_checking"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <Switch
+            android:id="@+id/simulationSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:buttonTint="@color/primary"
+            android:checked="true"
+            android:minHeight="48dp"
+            android:text="@string/simulation_mode"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/dynamicExperimentSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:checked="false"
+            android:minHeight="48dp"
+            android:text="Dynamic 실험 (끄면 Static)"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/SectionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/results_title" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_surface"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView style="@style/MetricLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cycle_time_label" />
+                    <TextView android:id="@+id/cycleTime" style="@style/MetricValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="-- ms" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView style="@style/MetricLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cycle_count_label" />
+                    <TextView android:id="@+id/cycleCount" style="@style/MetricValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" android:background="@color/stroke" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView style="@style/MetricLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/phase_label" />
+                    <TextView android:id="@+id/phaseValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="대기" android:textColor="@color/warning" android:textSize="17sp" android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView style="@style/SectionTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/configuration_title" />
+        <include android:id="@+id/boardContainerA" layout="@layout/board_row" />
+        <include android:id="@+id/boardContainerB" layout="@layout/board_row" />
+        <include android:id="@+id/boardContainerC" layout="@layout/board_row" />
+        <include android:id="@+id/boardContainerD" layout="@layout/board_row" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/connectButton"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/surface_alt"
+                android:text="@string/connect_all"
+                android:textColor="@color/text_primary" />
+            <Button
+                android:id="@+id/startButton"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/primary_dark"
+                android:text="@string/start_loop"
+                android:textColor="@color/text_primary" />
+            <Button
+                android:id="@+id/stopButton"
+                android:layout_width="82dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/danger"
+                android:enabled="false"
+                android:text="@string/stop_loop"
+                android:textColor="@color/text_primary" />
+        </LinearLayout>
+
+        <TextView style="@style/SectionTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/log_title" />
+        <TextView
+            android:id="@+id/logView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_surface"
+            android:fontFamily="monospace"
+            android:minHeight="100dp"
+            android:padding="12dp"
+            android:text="앱 준비 완료"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+</ScrollView>
